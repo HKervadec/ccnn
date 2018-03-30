@@ -1,10 +1,13 @@
 # --------------------------------------------------------
-# CCNN 
+# CCNN
 # Copyright (c) 2015 [See LICENSE file for details]
 # Written by Deepak Pathak, Philipp Krahenbuhl
 # --------------------------------------------------------
 
+# Currently useless and considered harmful
+
 from os import environ
+
 
 def tryLoad(name, default):
     try:
@@ -15,13 +18,17 @@ def tryLoad(name, default):
         return getattr(user_config, name)
     return default
 
+
 CAFFE_DIR = tryLoad('CAFFE_DIR', '.')
+print(CAFFE_DIR)
 
 import sys
 import config
 PD = CAFFE_DIR + '/python'
 if PD not in sys.path:
     sys.path.append(PD)
+
+print(sys.path)
 
 # if not 'GLOG_minloglevel' in environ:
 environ['GLOG_minloglevel'] = '1'

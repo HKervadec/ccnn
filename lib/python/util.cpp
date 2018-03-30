@@ -6,7 +6,7 @@
 /*
     Copyright (c) 2014, Philipp Krähenbühl
     All rights reserved.
-	
+
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
         * Redistributions of source code must retain the above copyright
@@ -17,7 +17,7 @@
         * Neither the name of the Stanford University nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
-	
+
     THIS SOFTWARE IS PROVIDED BY Philipp Krähenbühl ''AS IS'' AND ANY
     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -120,16 +120,16 @@ struct EigenMatrixFromPython {
 	static void construct(PyObject* obj_ptr, converter::rvalue_from_python_stage1_data* data) {
 		const int R = MatType::RowsAtCompileTime;
 		const int C = MatType::ColsAtCompileTime;
-		
+
 		PyArrayObject *array = reinterpret_cast<PyArrayObject*>(obj_ptr);
 		int flags = PyArray_FLAGS(array);
 		if (!(flags & NPY_ARRAY_C_CONTIGUOUS) || !(flags & NPY_ARRAY_ALIGNED))
 			throw std::invalid_argument("Contiguous and aligned array required!");
 		const int ndims = PyArray_NDIM(array);
-		
+
 		const int dtype_size = (PyArray_DESCR(array))->elsize;
 		const int s1 = PyArray_STRIDE(array, 0), s2 = ndims > 1 ? PyArray_STRIDE(array, 1) : 0;
-		
+
 		int nrows=1, ncols=1;
 		if( R==1 || C==1 ) { // Vector
 			nrows = R==1 ? 1 : PyArray_SIZE2(array);
@@ -141,9 +141,9 @@ struct EigenMatrixFromPython {
 				ncols = (R == Dynamic) ? PyArray_DIMS(array)[1] : R;
 		}
 		T* raw_data = reinterpret_cast<T*>(PyArray_DATA(array));
-		
+
 		typedef Map< Matrix<T,Dynamic,Dynamic,RowMajor>,Aligned,Stride<Dynamic, Dynamic> > MapType;
-		
+
 		void* storage=((converter::rvalue_from_python_storage<MatType>*)(data))->storage.bytes;
 		new (storage) MatType;
 		MatType* emat = (MatType*)storage;
@@ -192,12 +192,12 @@ void init_numpy() { import_array(); return; }
 void defineUtil() {
 	// NOTE: This file has a ton of macros and templates, so it's going to take a while to compile ...
 	init_numpy();
-	boost::python::numeric::array::set_module_and_type("numpy", "ndarray");
-	
+	// boost::python::numeric::array::set_module_and_type("numpy", "ndarray");
+
 	register_exception_translator<AssertException>(&translateAssertException);
-	
+
 	ADD_MODULE(util);
-	
+
 	// NOTE: When overloading functions always make sure to put the array/matrix function before the vector one
 	MAT_CONV( MatrixX );
 	MAT_CONV( RMatrixX );
@@ -205,11 +205,11 @@ void defineUtil() {
 	MAT_CONV( ArrayXX );
 	MAT_CONV( RArrayXX );
 	MAT_CONV( ArrayX );
-	
+
 	// Define some std::vectors
 	MAT_VEC( RMatrixX );
 	MAT_VEC( VectorX );
-	
+
 	// Datastructures
 	class_< std::vector<int> >("VecInt").def( vector_indexing_suite< std::vector<int> >() ).def( VectorInitSuite< std::vector<int> >() );
 	class_< std::vector<float> >("VecFloat").def( vector_indexing_suite< std::vector<float> >() ).def( VectorInitSuite< std::vector<float> >() );

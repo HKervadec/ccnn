@@ -5,3 +5,5 @@ build
 **.caffemodel
 **.solverstate
 **/.*
+
+*.tar.gz
